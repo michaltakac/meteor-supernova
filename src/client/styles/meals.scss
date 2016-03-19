@@ -1,0 +1,37 @@
+.meals {
+  white-space: nowrap;
+}
+
+.meal,
+.meal-action {
+  display: inline-block;
+  min-height: 1px;
+  margin-right: $spacer;
+  position: relative;
+  vertical-align: top;
+  white-space: normal;
+  width: 300px;
+
+  &:first-child {
+    margin-left: $spacer;
+  }
+
+  &:last-child {
+    margin-right: $spacer;
+  }
+}
+
+.meal {
+  .btn-link {
+    margin: 0;
+    padding: 0;
+  }
+
+  .dropdown-toggle {
+    color: #fff;
+  }
+}
+
+.dish-drop-target .panel-body {
+  background-color: $card-cap-bg;
+}

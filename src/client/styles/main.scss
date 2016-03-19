@@ -1,0 +1,61 @@
+@import 'variables';
+@import '~bootstrap/scss/bootstrap';
+@import 'bootstrap-theme';
+@import '~react-date-picker/index.css';
+@import 'calendar';
+@import 'growl';
+@import 'meals';
+@import 'dishes';
+@import 'meal-time';
+@import 'page-header';
+
+body,
+html,
+#root {
+  height: 100%;
+}
+
+.main-content {
+  padding-top: 5em;
+}
+
+.border-less,
+.border-less:focus {
+  background: transparent;
+  border: 0;
+  outline-style: none;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.inline-block {
+  display: inline-block;
+}
+
+.block {
+  display: block;
+}
+
+.profile-image {
+  position:relative;
+  margin-right: .5em;
+}
+
+.alert-info .btn-link {
+  color: #fff;
+
+  &:hover {
+    background-color: lighten($brand-info, 10%);
+  }
+}
+
+.btn .fa {
+  margin-right: .5em;
+}
+
+.btn.icon-right .fa {
+  margin-left: .5em;
+  margin-right: 0;
+}

@@ -1,0 +1,11 @@
+{
+  "root": "src",
+  "devServer": {
+    "host": "localhost"
+  },
+  "assets": {
+    "limit": 10000,
+  },
+  "css.module": true,
+  "hotMiddleware.reload": true
+}
