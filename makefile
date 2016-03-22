@@ -1,11 +1,6 @@
 .PHONY: met test
 
-copy-conf:
-	cp -n ./settings/development/settings-dist.json ./settings/development/settings.json
-	cp -n ./settings/production/settings-dist.json ./settings/production/settings.json
-	cp -n ./settings/staging/settings-dist.json ./settings/staging/settings.json
-
-make install: copy-conf
+make install:
 	npm install
 
 mongo:
