@@ -1,85 +1,47 @@
 /* global Meteor */
-import Promise from 'bluebird';
+//import Promise from 'bluebird';
 import actionTypeBuilder from '../actions/actionTypeBuilder';
 import { SUBSCRIPTIONS } from '../actions/subscriptions';
 
-const subs = {};
+const handles = [];
+const computations = [];
 
 export default store => next => action => {
-  if (!action.meteor || (!action.meteor.subscribe && !action.meteor.unsubscribe)) {
+  if (!action.meteor || !action.meteor.subscribe) {
     return next(action);
   }
 
-  return new Promise((resolve, reject) => {
+  const { subscribe, get, onChange } = action.meteor;
 
-    const { name } = action.meteor.subscribe || action.meteor.unsubscribe;
-    const sub = subs[name];
+  // If we already have an handle for this action
+  if (handles[action.type]) {
+    const subscriptionId = handles[action.type].subscriptionId;
+    computations[subscriptionId].stop();
+    handles[action.type].stop();
+  }
 
-    if (action.meteor.unsubscribe) {
-      if (sub) {
-        delete sub.subscribedActions[action.type];
-        if (_.isEmpty(sub.subscribedActions)) {
-          sub.handle.stop();
-          next({ type: actionTypeBuilder.stopped(SUBSCRIPTIONS), name } );
-        }
-      }
-      return resolve();
-    }
+  const handle = subscribe();
+  const subscriptionId = handle.subscriptionId;
+  handles[action.type] = handle;
 
-    const { params, get } = action.meteor.subscribe;
-    const parameters = params || [];
+  computations[subscriptionId] = Tracker.autorun(() => {
+    const data = get();
+    const ready = handle.ready();
 
-    if (Meteor.isServer && action.meteor.subscribe) {
-      Meteor.subscribe(name, ...parameters);
-      next({ type: actionTypeBuilder.ready(SUBSCRIPTIONS), name } );
-      if (get) {
-        return next({ type: action.type, meteor : { get } }).then(() => resolve());
-      }
-      return resolve();
-    }
-
-
-    const existing = sub && _.isEqual(sub.parameters, parameters);
-
-    if (existing && sub.handle.ready()) {
-      if (! sub.subscribedActions[action.type]) {
-        sub.subscribedActions[action.type] = 'ready';
-      }
-      if (get) {
-        return next({ type: action.type, meteor : { get } }).then(() => resolve());
-      }
-      return resolve();
-    }
-
-    if (sub && sub.handle.ready()) {
-      sub.handle.stop();
-    }
-
-
-    next({ type: actionTypeBuilder.loading(SUBSCRIPTIONS), name });
-
-    const handle = Meteor.subscribe(name, ...paramters, {
-      onReady: () => {
-        next({ type: actionTypeBuilder.ready(SUBSCRIPTIONS), name } );
-        if (get) {
-          return next({ type: action.type, meteor : { get } }).then(() => resolve());
-        }
-        return resolve();
-      },
-      onStop: (error) => {
-        if (error) {
-          next({ type: actionTypeBuilder.error(SUBSCRIPTIONS), name } );
-          reject(error);
-        }
-        next({ type: actionTypeBuilder.stopped(SUBSCRIPTIONS), name } );
-        delete subs[name];
-      }
+    store.dispatch({
+      type: actionTypeBuilder.ready(action.type),
+      ready,
     });
 
-    subs[name] = {
-      subscribedActions: {[action.type]: 'ready'},
-      parameters: _.clone(parameters),
-      handle: handle
-    };
+    if (ready) {
+      if (onChange) {
+        onChange(data);
+      }
+
+      store.dispatch({
+        type: actionTypeBuilder.changed(action.type),
+        data,
+      });
+    }
   });
 };

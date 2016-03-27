@@ -1,1 +1,1 @@
-import './MainApp/client';
+import 'MainApp/client';

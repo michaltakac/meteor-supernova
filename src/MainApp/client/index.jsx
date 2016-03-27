@@ -2,7 +2,7 @@
 import 'babel-polyfill';
 import React from 'react';
 import { render } from 'react-dom';
-import { Provider } from 'react-redux';
+//import { Provider } from 'react-redux';
 import { Router } from 'react-router';
 import moment from 'moment';
 import { browserHistory } from 'react-router';
@@ -22,7 +22,7 @@ require('bootstrap');
 
 import './styles/main.scss';
 
-const store = configureStore();
+const store = configureStore(browserHistory);
 const history = syncHistoryWithStore(browserHistory, store)
 
 // Dispatch the loadUser action immediatly so that the current user is available

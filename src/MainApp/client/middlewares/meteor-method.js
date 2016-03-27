@@ -1,33 +1,25 @@
-/* global Meteor */
-import Promise from 'bluebird';
 import actionTypeBuilder from '../actions/actionTypeBuilder';
 
-export default store => next => action => {
+/* global Meteor */
+export default (newSuccessNotification, newErrorNotification) => store => next => action => {
   if (!action.meteor || !action.meteor.call) {
     return next(action);
   }
 
-  const { method, params } = action.meteor.call;
-  const parameters = params || [];
+  const { method, parameters, onSuccess, onError } = action.meteor.call;
+  const params = parameters || [];
 
-  const meteorMethod = typeof method === 'string' ? Meteor.call : method;
-
-  if (typeof method === 'string') {
-    parameters.unshift(method);
-  }
-
-  return new Promise((resolve, reject) => {
-
-    next({ type: actionTypeBuilder.loading(action.type) });
-
-    meteorMethod(...parameters, (error, result) => {
-      if (error) {
-        next({ type: actionTypeBuilder.error(action.type), error });
-        return reject(error);
+  Meteor.call(method, ...params, (error, result) => {
+    if (error) {
+      if (onError) {
+        return onError(error);
       }
+      return store.dispatch(newErrorNotification());
+    }
 
-      next({ type: actionTypeBuilder.success(action.type) });
-      return resolve(result);
-    });
+    if (onSuccess) {
+      return onSuccess(result);
+    }
+    store.dispatch(newSuccessNotification());
   });
 };
