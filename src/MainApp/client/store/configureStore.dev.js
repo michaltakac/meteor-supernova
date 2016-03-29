@@ -9,7 +9,6 @@ import { meteorInsert, meteorUpdate, meteorRemove } from '../middlewares/meteor-
 import { newSuccessNotification, newErrorNotification } from '../actions/notifications';
 import DevTools from '../containers/DevTools';
 
-
 export default function configureStore(history, initialState) {
 
   const middlewares = [

@@ -2,5 +2,6 @@
   "root": "src",
   "devServer": {
     "host": "localhost"
-  }
+  },
+  "css.modules": true
 }

@@ -3,10 +3,14 @@ import React from 'react';
 import Fa from 'react-fa';
 import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router';
+import styles from './home.css';
 
 const Home = () => (
   <div className="row">
     <div className="col-xs-12">
+      <div>
+        <p className={ styles.text }>Ahooooj</p>
+      </div>
       <div className="jumbotron">
         <h1>
           <FormattedMessage
